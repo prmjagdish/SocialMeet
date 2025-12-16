@@ -7,9 +7,11 @@ import { InputField, Button } from "@components";
 import { loginUser } from "@api/authService";
 import { useFormik } from "formik";
 import { loginValidationSchema } from "@utils/validation";
+import { useAuth } from "@context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const formik = useFormik({
     initialValues: { username: "", password: "" },
@@ -21,13 +23,15 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
         const { token } = await loginUser(values);
-        localStorage.setItem("token", token);
+        login(token);
         navigate("/home");
       } catch (error) {
         if (error.response?.status === 401) {
           setErrors({ general: "Invalid username or password" });
         } else {
-          setErrors({general: "Something went wrong. Please try again later."});
+          setErrors({
+            general: "Something went wrong. Please try again later.",
+          });
         }
       } finally {
         setSubmitting(false);

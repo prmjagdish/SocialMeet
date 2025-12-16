@@ -11,17 +11,19 @@ import {
   
 } from "@pages";
 import { Layout } from "@layouts";
-import { CreatePost, ProtectedRoute} from "@components";
+import { CreatePost, ProtectedRoute, PublicRoute} from "@components";
+
 
 const AppRoutes = () => {
   return (
     <Routes>
-       <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/verify-otp" element={<VerifyOTPPage />} />
-      <Route path="/login" element={<Login />} />
-
-      <Route element={<ProtectedRoute />}>
+        <Route element={<PublicRoute />}>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-otp" element={<VerifyOTPPage />} />
+      </Route>
+    <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/reels" element={<ReelsPage />} />
