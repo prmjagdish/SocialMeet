@@ -7,15 +7,14 @@ import SavedThumbnail from "@components/SavedThumbnail";
 import ReelThumbnail from "@components/ReelThumbnail";
 import { ProfileContext } from "@context/ProfileContext";
 import { useNavigate } from "react-router-dom";
-
+import SidebarMore from "@components/sidebar/SidebarMore";
+import { RiMessengerLine } from "react-icons/ri";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("posts");
   const { profile } = useContext(ProfileContext);
 
   const navigate = useNavigate();
-
-  
 
   const tabs = [
     { label: "Posts", key: "posts" },
@@ -52,9 +51,22 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white px-4 sm:px-6 py-6 text-gray-900">
+    <div className="min-h-screen bg-white px-4 sm:px-6 py-4 text-gray-900">
+      <div className="max-w-5xl mx-auto flex items-center justify-between px-2 sm:hidden">
+        {/* LEFT */}
+        <button
+          // onClick={() => navigate("/messages")}
+          className="p-2 rounded-full hover:bg-gray-100"
+        >
+          <RiMessengerLine className="text-2xl" />
+        </button>
+
+        {/* RIGHT */}
+        <SidebarMore variant="top" />
+      </div>
+
       <div className="max-w-5xl mx-auto">
-        <div className="mb-6">
+        <div className="">
           <ProfileHeader />
         </div>
 

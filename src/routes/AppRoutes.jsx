@@ -7,8 +7,7 @@ import {
   ProfilePage,
   ReelsPage,
   HomePage,
-  SearchPage,
-  
+  SearchPage
 } from "@pages";
 import { Layout } from "@layouts";
 import { CreatePost, ProtectedRoute, PublicRoute} from "@components";
@@ -19,7 +18,6 @@ const AppRoutes = () => {
     <Routes>
         <Route element={<PublicRoute />}>
         <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-otp" element={<VerifyOTPPage />} />
       </Route>

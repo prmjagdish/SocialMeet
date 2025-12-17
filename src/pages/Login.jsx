@@ -18,7 +18,6 @@ const Login = () => {
     validationSchema: loginValidationSchema,
     validateOnBlur: true,
     validateOnChange: false,
-    validateOnMount: true,
 
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
@@ -39,6 +38,13 @@ const Login = () => {
     },
   });
 
+  // ✅ Revalidate only AFTER blur and ONLY if error exists
+  const revalidateIfError = async (field) => {
+    if (formik.touched[field] && formik.errors[field]) {
+      await formik.validateField(field);
+    }
+  };
+
   return (
     <AuthLayout>
       <div className="w-full bg-white border border-gray-300 rounded-lg p-8">
@@ -47,26 +53,28 @@ const Login = () => {
         </div>
 
         <form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">
+          {/* Username */}
           <InputField
             name="username"
             placeholder="Username"
             value={formik.values.username}
-            onChange={(e) => {
+            onChange={async (e) => {
               formik.handleChange(e);
-              formik.setFieldError("username", "");
+              await revalidateIfError("username");
             }}
             onBlur={formik.handleBlur}
             error={formik.touched.username && formik.errors.username}
           />
 
+          {/* Password */}
           <InputField
             name="password"
             type="password"
             placeholder="Password"
             value={formik.values.password}
-            onChange={(e) => {
+            onChange={async (e) => {
               formik.handleChange(e);
-              formik.setFieldError("password", "");
+              await revalidateIfError("password");
             }}
             onBlur={formik.handleBlur}
             error={formik.touched.password && formik.errors.password}
@@ -78,11 +86,16 @@ const Login = () => {
             </p>
           )}
 
+          {/* Button */}
           <Button
             type="submit"
-            disabled={!formik.isValid || formik.isSubmitting}
+            disabled={
+              formik.isSubmitting ||
+              formik.values.username.trim().length === 0 ||
+              formik.values.password.length < 6
+            }
           >
-            Log In
+            {formik.isSubmitting ? "Logging in..." : "Log In"}
           </Button>
         </form>
 

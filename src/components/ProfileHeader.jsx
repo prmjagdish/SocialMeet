@@ -13,8 +13,7 @@ const ProfileHeader = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 bg-white rounded-xl shadow w-full">
-      
+    <div className="flex flex-col gap-4 p-4 sm:p-6 bg-white rounded-xl  w-full">
       {/* Row 1: Avatar + Username/Name/Bio */}
       <div className="flex gap-6 items-start">
         {/* Avatar */}
@@ -28,7 +27,9 @@ const ProfileHeader = () => {
 
         {/* Username, Name, Bio */}
         <div className="flex flex-col gap-1">
-          <p className="font-bold text-lg sm:text-xl">@{profile.user.username}</p>
+          <p className="font-bold text-lg sm:text-xl">
+            @{profile.user.username}
+          </p>
           {profile.user.name && (
             <p className=" text-lg sm:text-xl">{profile.user.name}</p>
           )}
@@ -43,7 +44,8 @@ const ProfileHeader = () => {
       {/* Row 2: Stats (Start from main div beginning, not avatar) */}
       <div className="flex gap-6 text-sm text-gray-700 ">
         <span>
-          <span className="font-semibold">{profile.posts?.length || 0}</span> posts
+          <span className="font-semibold">{profile.posts?.length || 0}</span>{" "}
+          posts
         </span>
         <FollowerAndFollowing
           followers={profile.followers?.length || 0}
