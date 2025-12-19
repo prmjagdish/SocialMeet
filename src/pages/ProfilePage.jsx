@@ -52,16 +52,7 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-6 py-4 text-gray-900">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-2 sm:hidden">
-        {/* LEFT */}
-        <button
-          // onClick={() => navigate("/messages")}
-          className="p-2 rounded-full hover:bg-gray-100"
-        >
-          <RiMessengerLine className="text-2xl" />
-        </button>
-
-        {/* RIGHT */}
+      <div className="max-w-5xl mx-auto flex justify-end px-2 sm:hidden">
         <SidebarMore variant="top" />
       </div>
 

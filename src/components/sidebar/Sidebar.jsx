@@ -11,8 +11,8 @@ const Sidebar = () => {
   const menuItems = [
     { label: "Home", icon: <FaHome />, path: "/home" },
     { label: "Search", icon: <FaSearch />, path: "/search" },
+     { label: "Create", icon: <FiPlusSquare />, path: "/create" },
     { label: "Reels", icon: <FaVideo />, path: "/reels" },
-    { label: "Create", icon: <FiPlusSquare />, path: "/create" },
     { label: "Profile", icon: <FaUser />, path: "/profile" },
   ];
 

@@ -1,9 +1,12 @@
 import React from "react";
-import user from "@data/User";
-import { useState } from "react";
+import { useSuggestedUsers } from "../context/SuggestedUsersProvider";
 
 const MainLayout = ({ children }) => {
-  const [visibleCount, setVisibleCount] = useState(5);
+  const {
+    suggestedUsers = [],
+    visibleCount,
+    setVisibleCount,
+  } = useSuggestedUsers();
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50">
@@ -22,38 +25,37 @@ const MainLayout = ({ children }) => {
 
           {/* Suggested Users */}
           <div className="space-y-2">
-            {user.suggestedUsers.slice(0, visibleCount).map((u) => (
+            {suggestedUsers.slice(0, visibleCount).map((u) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-lg transition"
+                className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-lg"
               >
-                {/* User Info */}
                 <div className="flex items-center gap-2">
                   <img
                     className="w-10 h-10 rounded-full border border-gray-200"
-                    src={u.avatar}
-                    alt={u.name}
+                    src={u.avatarUrl || "/default-avatar.png"}
+                    alt={u.username}
                   />
+
                   <div className="flex flex-col">
                     <p className="text-sm font-medium text-gray-800">
-                      {u.name}
+                      {u.name || u.username.replace("@", "")}
                     </p>
                     <span className="text-xs text-gray-400">{u.username}</span>
                   </div>
                 </div>
 
-                {/* Follow Button */}
-                <button className="px-4 py-1.5  text-sm font-semibold rounded-md text-gray-900 border border-gray-300 hover:bg-gray-200 transition-colors">
+                <button className="px-4 py-1.5 text-sm font-semibold border rounded-md hover:bg-gray-200">
                   Follow
                 </button>
               </div>
             ))}
 
-            {visibleCount < user.suggestedUsers.length && (
+            {visibleCount < suggestedUsers.length && (
               <div className="mt-4 text-center">
                 <button
-                  onClick={() => setVisibleCount(visibleCount + 5)}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                  onClick={() => setVisibleCount((v) => v + 5)}
+                  className="text-sm font-medium text-blue-600"
                 >
                   Show more
                 </button>

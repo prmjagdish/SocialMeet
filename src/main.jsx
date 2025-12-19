@@ -5,12 +5,15 @@ import App from "./App.jsx";
 import "./index.css";
 import ProfileProvider from "@context/ProfileProvider.jsx";
 import { AuthProvider } from "@context/AuthContext.jsx";
+import { SuggestedUsersProvider } from "@context/SuggestedUsersProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <ProfileProvider>
-        <App />
+        <SuggestedUsersProvider>
+          <App />
+        </SuggestedUsersProvider>
       </ProfileProvider>
     </AuthProvider>
   </StrictMode>
