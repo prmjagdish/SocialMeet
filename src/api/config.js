@@ -8,5 +8,6 @@ export const AUTH_ENDPOINTS = {
   VERIFY_OTP: "/auth/verify-otp",
   SUGGESTED_USERS: "api/profile/suggested",
   ACCOUNT_DELETE: "/api/profile/me",
+  GET_PUBLIC_PROFILE: "/api/profile/users/",
 };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { useSuggestedUsers } from "../context/SuggestedUsersProvider";
+import { useNavigate } from "react-router-dom";
 
 const MainLayout = ({ children }) => {
   const {
@@ -7,6 +8,7 @@ const MainLayout = ({ children }) => {
     visibleCount,
     setVisibleCount,
   } = useSuggestedUsers();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50">
@@ -30,10 +32,15 @@ const MainLayout = ({ children }) => {
                 key={u.id}
                 className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-lg"
               >
-                <div className="flex items-center gap-2">
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() =>
+                    navigate(`/profile/${u.username.replace("@", "")}`)
+                  }
+                >
                   <img
                     className="w-10 h-10 rounded-full border border-gray-200"
-                    src={u.avatarUrl || "/default-avatar.png"}
+                    src={u.avatarUrl || "/image.png"}
                     alt={u.username}
                   />
 

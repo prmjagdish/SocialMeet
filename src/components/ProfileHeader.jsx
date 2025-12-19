@@ -4,6 +4,7 @@ import FollowerAndFollowing from "./FollowerAndFollowing";
 import ProfileEditForm from "./ProfileEditForm";
 import { FaShareAlt } from "react-icons/fa";
 
+
 const ProfileHeader = () => {
   const { profile, setProfile } = useContext(ProfileContext);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -18,11 +19,15 @@ const ProfileHeader = () => {
       <div className="flex gap-6 items-start">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          <img
-            src={profile.user.avatar}
-            alt={profile.user.name}
-            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border border-gray-300"
-          />
+         <img
+  src={profile.user.avatar || "/image.png"}
+  alt={profile.user.name}
+  onError={(e) => {
+    e.currentTarget.src = "/default-image.png";
+  }}
+  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border border-gray-300"
+/>
+
         </div>
 
         {/* Username, Name, Bio */}
@@ -54,7 +59,7 @@ const ProfileHeader = () => {
       </div>
 
       {/* Row 3: Buttons (Start from main div beginning) */}
-      <div className="flex gap-3">
+      {profile.owner && (<div className="flex gap-3">
         <button
           onClick={() => setShowEditModal(true)}
           className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm sm:text-base"
@@ -67,7 +72,7 @@ const ProfileHeader = () => {
         >
           <FaShareAlt /> Share Profile
         </button>
-      </div>
+      </div>)}
 
       {/* Edit Profile Modal */}
       {showEditModal && (

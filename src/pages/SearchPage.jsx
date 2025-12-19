@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useSuggestedUsers } from "@context/SuggestedUsersProvider";
+import { useNavigate } from "react-router-dom";
 
 const SearchPage = () => {
   const { suggestedUsers = [] } = useSuggestedUsers();
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleCount, setVisibleCount] = useState(5);
+  const navigate = useNavigate();
 
   const filteredUsers = suggestedUsers.filter(
     (u) =>
@@ -36,9 +38,14 @@ const SearchPage = () => {
                              border border-gray-200 rounded-lg p-3 shadow-sm
                              hover:shadow-md transition"
                 >
-                  <div className="flex items-center gap-3">
+                   <div
+                    className="flex items-center gap-3 cursor-pointer"
+                    onClick={() =>
+                      navigate(`/profile/${u.username.replace("@", "")}`)
+                    }
+                  >
                     <img
-                      src={u.avatarUrl || "/default-avatar.png"}
+                      src={u.avatarUrl || "/image.png"}
                       alt={u.username}
                       className="w-12 h-12 rounded-full object-cover"
                     />

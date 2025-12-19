@@ -1,48 +1,74 @@
-import React, { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import ProfileHeader from "@components/ProfileHeader";
-import dummyReels from "@data/Reel";
-import savedPosts from "@data/Saved";
 import PostThumbnail from "@components/PostThumbnail";
 import SavedThumbnail from "@components/SavedThumbnail";
 import ReelThumbnail from "@components/ReelThumbnail";
-import { ProfileContext } from "@context/ProfileContext";
-import { useNavigate } from "react-router-dom";
 import SidebarMore from "@components/sidebar/SidebarMore";
-import { RiMessengerLine } from "react-icons/ri";
+import dummyReels from "@data/Reel";
+import savedPosts from "@data/Saved";
+
+import { ProfileContext } from "@context/ProfileContext";
+import { getMyProfile, getPublicProfile } from "@api/profile";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("posts");
-  const { profile } = useContext(ProfileContext);
-
+  const { profile, setProfile } = useContext(ProfileContext); 
+  const { username } = useParams(); 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setProfile(null);
+
+        if (username) {
+          const data = await getPublicProfile(username);
+          setProfile(data);
+        } else {
+          const data = await getMyProfile();
+          setProfile(data);
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
+
+    fetchProfile();
+  }, [username, setProfile]);
+
+  if (!profile) {
+    return <p className="text-center py-10">Loading profile...</p>;
+  }
 
   const tabs = [
     { label: "Posts", key: "posts" },
-    { label: "Reels", key: "reels" },
+    // { label: "Reels", key: "reels" },
     { label: "Saved", key: "saved" },
   ];
 
   const renderTabContent = () => {
     if (activeTab === "posts") {
-      if (!profile?.posts?.length) {
+      if (!profile.posts?.length) {
         return <p className="text-center text-gray-400 py-10">No posts yet</p>;
       }
-      return profile?.posts.map((post) => (
+      return profile.posts.map((post) => (
         <div
-          key={post?.id}
-          onClick={() => navigate(`/home?scrollTo=${post.id || post._id}`)}
+          key={post.id}
+          onClick={() => navigate(`/home?scrollTo=${post.id}`)}
           className="cursor-pointer"
         >
-          <PostThumbnail key={post.id} post={post} />
+          <PostThumbnail post={post} />
         </div>
       ));
     }
 
-    if (activeTab === "reels") {
-      return dummyReels.map((reel) => (
-        <ReelThumbnail key={reel?.id} reel={reel} />
-      ));
-    }
+    // if (activeTab === "reels") {
+    //   return dummyReels.map((reel) => (
+    //     <ReelThumbnail key={reel.id} reel={reel} />
+    //   ));
+    // }
+
     if (activeTab === "saved") {
       return savedPosts.map((item) => (
         <SavedThumbnail key={`${item.type}-${item.id}`} item={item} />
@@ -57,9 +83,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="max-w-5xl mx-auto">
-        <div className="">
-          <ProfileHeader />
-        </div>
+        <ProfileHeader />
 
         {/* Tabs */}
         <div className="flex gap-6 border-b border-gray-300 mb-6">

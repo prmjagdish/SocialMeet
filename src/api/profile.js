@@ -16,3 +16,8 @@ export const deleteAccount = async () => {
   const response = await api.delete(AUTH_ENDPOINTS.ACCOUNT_DELETE);
   return response.data;
 };
+
+export const getPublicProfile = async (username) => {
+  const response = await api.get(`${AUTH_ENDPOINTS.GET_PUBLIC_PROFILE}${username}`);
+  return response.data;
+}

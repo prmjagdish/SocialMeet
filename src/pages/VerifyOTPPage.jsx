@@ -17,7 +17,7 @@ const VerifyOTPPage = () => {
       const res = await verifyOTP({ email, otp });
 
       if (res?.verified) {
-        navigate("/login");
+        navigate("/");
       } else {
         setError("Invalid code. Please try again.");
       }

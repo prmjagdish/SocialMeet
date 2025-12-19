@@ -18,7 +18,7 @@ const PostCard = ({ post }) => {
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <img
-            src={post.avatarUrl}
+            src={post.avatarUrl || "/image.png"}
             alt="avatar"
             className="w-10 h-10 rounded-full object-cover"
           />

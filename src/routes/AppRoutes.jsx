@@ -26,6 +26,7 @@ const AppRoutes = () => {
           <Route path="/home" element={<HomePage />} />
           <Route path="/reels" element={<ReelsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/:username" element={<ProfilePage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/create" element={<CreatePost />} />
         </Route>
