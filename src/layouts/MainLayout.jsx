@@ -11,22 +11,22 @@ const MainLayout = ({ children }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50">
-      {/* Postsfeed */}
-      <main className="flex-1 h-screen md:px-8 py-6 overflow-y-auto scrollbar-hide bg-white shadow-sm  mx-auto">
+    <div className="flex flex-col md:flex-row h-screen bg-white">
+      <main className="flex-1 h-screen md:px-8 py-6 overflow-y-auto scrollbar-hide bg-white mx-auto">
         {children}
       </main>
 
-      {/* Right Sidebar */}
       <aside className="hidden lg:block w-1/3">
-        <div className="bg-white h-screen p-5  shadow-sm overflow-y-auto scrollbar-hide">
-          {/* Title */}
+        <div className="bg-white h-screen p-5  overflow-y-auto scrollbar-hide">
           <h3 className="text-lg font-semibold text-gray-800 mb-5">
             Suggested for you
           </h3>
 
-          {/* Suggested Users */}
           <div className="space-y-2">
+            {suggestedUsers.length === 0 && (
+              <p className="text-sm text-gray-400">Loading suggestions...</p>
+            )}
+
             {suggestedUsers.slice(0, visibleCount).map((u) => (
               <div
                 key={u.id}

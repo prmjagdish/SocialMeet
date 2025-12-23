@@ -49,7 +49,7 @@ const Sidebar = () => {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between px-6 py-3 z-50">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-between px-12 py-4 z-50">
         {menuItems.map((item) => (
           <button
             key={item.label}
@@ -61,7 +61,7 @@ const Sidebar = () => {
               active === item.label ? "text-gray-900" : "text-gray-400"
             }`}
           >
-            <span className="text-lg">{item.icon}</span>
+            <span className="text-2xl">{item.icon}</span>
           </button>
         ))}
       </div>

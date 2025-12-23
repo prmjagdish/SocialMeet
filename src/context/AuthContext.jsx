@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { getMyProfile } from "@api/profile";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,6 +16,25 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      setMe(null);
+      return;
+    }
+
+    const fetchMe = async () => {
+      try {
+        const data = await getMyProfile();
+        setMe(data);
+      } catch (err) {
+        console.error("Failed to fetch me", err);
+        logout(); 
+      }
+    };
+
+    fetchMe();
+  }, [token]);
+
   const login = (token) => {
     localStorage.setItem("token", token);
     setToken(token);
@@ -22,12 +43,14 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    setMe(null);
   };
 
   return (
     <AuthContext.Provider
       value={{
         token,
+        me,
         isAuthenticated: !!token,
         login,
         logout,

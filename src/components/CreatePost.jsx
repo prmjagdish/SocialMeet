@@ -1,110 +1,152 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ProfileContext } from "@context/ProfileContext.jsx";
-import  {uploadPostOrReel } from "../api/posts";
+import { useAuth } from "../context/AuthContext";
+import { uploadPostOrReel } from "../api/posts";
+import Cropper from "react-easy-crop";
+import { getCroppedImg } from "@utils/cropImage";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CreatePost = () => {
   const [activeTab, setActiveTab] = useState("post");
   const [mediaFile, setMediaFile] = useState(null);
   const [previewURL, setPreviewURL] = useState(null);
   const [caption, setCaption] = useState("");
-  const { profile } = useContext(ProfileContext);
+
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const { me } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleMediaChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setMediaFile(file);
-      setPreviewURL(URL.createObjectURL(file));
-    }
+    if (!file) return;
+
+    setMediaFile(file);
+    setPreviewURL(URL.createObjectURL(file));
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!mediaFile) return alert("Please select a file");
+  const { mutate: createPost, isPending } = useMutation({
+    mutationFn: async () => {
+      let finalFile = mediaFile;
 
-    try {
-      await uploadPostOrReel(profile.user.username, mediaFile, caption, activeTab);
-      setMediaFile(null);
-      setPreviewURL(null);
-      setCaption("");
+      if (activeTab === "post" && croppedAreaPixels) {
+        finalFile = await getCroppedImg(previewURL, croppedAreaPixels);
+      }
+
+      return uploadPostOrReel(me.user.username, finalFile, caption, activeTab);
+    },
+    onSuccess: () => {
+      // Refresh profile and feed
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
+
       navigate("/profile");
-    } catch (err) {
-      console.error("Upload error:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Failed to upload");
-    }
-  };
+    },
+    onError: (err) => {
+      alert(err.response?.data?.message || "Upload failed");
+    },
+  });
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 text-gray-900 font-sans pb-24">
-      {/* pb-24 adds extra bottom padding for mobile navigation bar */}
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 pb-24">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
         {/* Tabs */}
-        <div className="flex justify-center gap-4 mb-6 text-gray-700 font-medium">
-          <button
-            className={`px-4 py-2 rounded-lg transition text-base ${
-              activeTab === "post" ? "bg-white border border-gray-300" : "bg-gray-100 hover:bg-gray-200"
-            }`}
-            onClick={() => { setActiveTab("post"); setMediaFile(null); }}
-          >
-            Post
-          </button>
-          <button
-            className={`px-4 py-2 rounded-lg transition text-base ${
-              activeTab === "reel" ? "bg-white border border-gray-300" : "bg-gray-100 hover:bg-gray-200"
-            }`}
-            onClick={() => { setActiveTab("reel"); setMediaFile(null); }}
-          >
-            Reel
-          </button>
+        <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
+          {["post"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => {
+                setActiveTab(tab);
+                setMediaFile(null);
+                setPreviewURL(null);
+              }}
+              className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${
+                activeTab === tab
+                  ? "bg-white shadow text-blue-600"
+                  : "text-gray-500"
+              }`}
+            >
+              {tab === "post" ? "Post" : "Reel"}
+            </button>
+          ))}
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg border border-gray-200 flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-gray-800">
-            {activeTab === "post" ? "Create Post" : "Upload Reel"}
-          </h2>
-
+        {/* Upload */}
+        <label className="border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 transition mb-4">
           <input
             type="file"
             accept={activeTab === "post" ? "image/*" : "video/*"}
             onChange={handleMediaChange}
-            className="w-full p-2 rounded border border-gray-300 text-gray-700 text-base"
+            className="hidden"
           />
-
-          {mediaFile && (
-            <div className="flex justify-center">
-              {activeTab === "post" ? (
-                <img
-                  src={previewURL}
-                  alt="Preview"
-                  className="max-w-80 rounded-lg"
-                />
-              ) : (
-                <video
-                  src={previewURL}
-                  controls
-                  className="w-full max-h-64 rounded-lg"
-                />
-              )}
-            </div>
+          {!mediaFile ? (
+            <>
+              <p className="text-gray-600 font-medium">
+                Click to upload {activeTab === "post" ? "image" : "video"}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">JPG, PNG or MP4</p>
+            </>
+          ) : (
+            <span className="text-sm text-blue-600 font-semibold">
+              File selected ✓
+            </span>
           )}
+        </label>
 
-          <textarea
-            placeholder="Caption (optional)"
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            className="w-full p-2 rounded border border-gray-300 text-gray-700 text-base resize-none"
-            rows={3}
-          />
+        {/* Cropper */}
+        {mediaFile && activeTab === "post" && (
+          <>
+            <div className="relative w-full h-80 bg-black rounded-xl overflow-hidden">
+              <Cropper
+                image={previewURL}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full hover:bg-blue-600 rounded border border-gray-300 text-gray-700 py-2 rounded-lg font-semibold text-base transition "
-          >
-            {activeTab === "post" ? "Post" : "Upload"}
-          </button>
-        </form>
+            <input
+              type="range"
+              min={1}
+              max={3}
+              step={0.1}
+              value={zoom}
+              onChange={(e) => setZoom(e.target.value)}
+              className="w-full mt-4"
+            />
+          </>
+        )}
+
+        {/* Caption */}
+        <textarea
+          placeholder="Write a caption..."
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          rows={3}
+          className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 mb-4"
+        />
+
+        {/* Submit */}
+        <button
+          onClick={() => createPost()}
+          disabled={isPending || !mediaFile}
+          className={`w-full py-2.5 rounded-xl font-semibold text-white transition ${
+            isPending
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {isPending ? "Uploading..." : "Share Post"}
+        </button>
       </div>
     </div>
   );
