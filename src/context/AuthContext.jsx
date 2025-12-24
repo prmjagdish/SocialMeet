@@ -46,6 +46,17 @@ export const AuthProvider = ({ children }) => {
     setMe(null);
   };
 
+  const deletePostById = (postId) => {
+  setMe((prev) => {
+    if (!prev || !prev.posts) return prev;
+
+    return {
+      ...prev,
+      posts: prev.posts.filter((p) => p.id !== postId),
+    };
+  });
+};
+
   return (
     <AuthContext.Provider
       value={{
@@ -55,6 +66,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         loading,
+        deletePostById,
       }}
     >
       {children}

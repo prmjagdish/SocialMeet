@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import  {API_BASE_URL}  from "../api/config";
-
+import { API_BASE_URL } from "../../api/config";
 
 const ProfileEditForm = ({ username, setShowEditModal, setProfile }) => {
   const [editForm, setEditForm] = useState({ name: "", bio: "" });
@@ -23,7 +22,12 @@ const ProfileEditForm = ({ username, setShowEditModal, setProfile }) => {
         const uploadRes = await axios.post(
           `${API_BASE_URL}/api/images/upload`,
           formData,
-          { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${localStorage.getItem("token")}` } }
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
         imageUrl = uploadRes.data.url;
       }
@@ -31,15 +35,17 @@ const ProfileEditForm = ({ username, setShowEditModal, setProfile }) => {
       const payload = { ...editForm };
       if (imageUrl) payload.avatar = imageUrl;
 
-      await axios.put(
-        `${API_BASE_URL}/api/profile/${username}/edit`,
-        payload,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
+      await axios.put(`${API_BASE_URL}/api/profile/${username}/edit`, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
 
-      setProfile(prev => ({
+      setProfile((prev) => ({
         ...prev,
-        user: { ...prev.user, ...editForm, ...(imageUrl && { avatar: imageUrl }) },
+        user: {
+          ...prev.user,
+          ...editForm,
+          ...(imageUrl && { avatar: imageUrl }),
+        },
       }));
 
       setShowEditModal(false);
@@ -53,7 +59,9 @@ const ProfileEditForm = ({ username, setShowEditModal, setProfile }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-lg overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900 text-center">Edit Profile</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 text-center">
+          Edit Profile
+        </h2>
 
         <input
           type="text"
@@ -80,7 +88,11 @@ const ProfileEditForm = ({ username, setShowEditModal, setProfile }) => {
 
         {preview && (
           <div className="flex justify-center mb-3">
-            <img src={preview} alt="preview" className="w-32 h-32 rounded-full object-cover" />
+            <img
+              src={preview}
+              alt="preview"
+              className="w-32 h-32 rounded-full object-cover"
+            />
           </div>
         )}
 

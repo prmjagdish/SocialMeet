@@ -11,3 +11,6 @@ export const AUTH_ENDPOINTS = {
   GET_PUBLIC_PROFILE: "/api/profile/users/",
 };
 
+export const POSTS_ENDPOINTS = {
+  DELETE_POST: "/api/posts/",
+};

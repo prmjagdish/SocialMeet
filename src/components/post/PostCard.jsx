@@ -6,35 +6,50 @@ import {
   FaRegBookmark,
   FaBookmark,
 } from "react-icons/fa";
-import { FiSend } from "react-icons/fi"; // for Share button
+import { useNavigate } from "react-router-dom";
+import PostOptions from "./PostEditOptions";
+import PostCaptionEdit from "./PostCaptionEdit";
+import defualtAvatar from "../../assets/avatarimage.png";
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, isOwner = false, showFollow = true }) => {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [caption, setCaption] = useState(post.caption);
+  const navigate = useNavigate();
+
+  const handleSaveCaption = () => {
+    // Here you can call your API to save the caption
+    post.caption = caption; // Optimistic update
+    setEditOpen(false); // Close modal
+  };
 
   return (
     <div className="bg-white w-full rounded-xl hover:shadow-lg transition mx-auto">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
+        <div
+          className="flex items-center gap-3 cursor-pointer"
+          onClick={() => navigate(`/profile/${post.username.replace("@", "")}`)}
+        >
           <img
-            src={post.avatarUrl || "/image.png"}
+            src={post.avatarUrl || defualtAvatar}
             alt="avatar"
             className="w-10 h-10 rounded-full object-cover"
           />
-          <div>
-            <p className="font-semibold text-gray-900 text-lx">
-              {post.username}
-            </p>
-            <span className="text-gray-700 text-sm">2 day ago</span>
-          </div>
+          <p className="font-semibold text-gray-900">{post.username}</p>
         </div>
-        <button className="px-4 py-1.5  text-sm font-semibold rounded-md text-gray-900 border border-gray-300 hover:bg-gray-200 transition-colors">
-          Follow
-        </button>
+
+        {isOwner ? (
+          <PostOptions post={post} onEdit={() => setEditOpen(true)} />
+        ) : (
+          showFollow && (
+            <button className="px-4 py-1.5 text-sm font-semibold rounded-md text-gray-900 border border-gray-300 hover:bg-gray-200">
+              Follow
+            </button>
+          )
+        )}
       </div>
 
-      {/* Post Image + Caption */}
       <div className="p-2">
         <img
           src={post.imageUrl}
@@ -44,9 +59,7 @@ const PostCard = ({ post }) => {
         <p className="text-gray-800 text-sm px-2">{post.caption}</p>
       </div>
 
-      {/* Action buttons */}
       <div className="flex justify-around px-4 py-2 border-b border-gray-200 text-gray-600 text-sm">
-        {/* Like */}
         <button
           onClick={() => setLiked(!liked)}
           className={`flex items-center gap-2 transition ${
@@ -57,19 +70,6 @@ const PostCard = ({ post }) => {
           <span>Like</span>
         </button>
 
-        {/* Comment */}
-        <button className="flex items-center gap-2 hover:text-indigo-600 transition">
-          <FaRegCommentDots />
-          <span>Comment</span>
-        </button>
-
-        {/* Share */}
-        <button className="flex items-center gap-2 hover:text-green-600 transition">
-          <FiSend />
-          <span>Share</span>
-        </button>
-
-        {/* Save */}
         <button
           onClick={() => setSaved(!saved)}
           className={`flex items-center gap-2 transition ${
@@ -80,6 +80,15 @@ const PostCard = ({ post }) => {
           <span>Save</span>
         </button>
       </div>
+
+      {editOpen && (
+        <PostCaptionEdit
+          caption={caption}
+          setCaption={setCaption}
+          handleSaveCaption={handleSaveCaption}
+          setEditOpen={setEditOpen}
+        />
+      )}
     </div>
   );
 };

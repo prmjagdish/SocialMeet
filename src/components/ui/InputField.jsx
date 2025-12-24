@@ -16,7 +16,6 @@ function InputField({
 }) {
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
-      
       {showLabel && (
         <label htmlFor={id} className="block text-xs font-medium text-gray-900">
           {label}

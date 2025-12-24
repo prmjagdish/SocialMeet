@@ -1,6 +1,7 @@
 import React from "react";
 import { useSuggestedUsers } from "../context/SuggestedUsersProvider";
 import { useNavigate } from "react-router-dom";
+import defualtAvatar from "../assets/avatarimage.png";
 
 const MainLayout = ({ children }) => {
   const {
@@ -40,7 +41,7 @@ const MainLayout = ({ children }) => {
                 >
                   <img
                     className="w-10 h-10 rounded-full border border-gray-200"
-                    src={u.avatarUrl || "/image.png"}
+                    src={u.avatarUrl || defualtAvatar}
                     alt={u.username}
                   />
 

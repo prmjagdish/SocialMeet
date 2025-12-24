@@ -5,30 +5,32 @@ import {
   Login,
   VerifyOTPPage,
   ProfilePage,
-  ReelsPage,
   HomePage,
-  SearchPage
+  SearchPage,
+  UserPostViewer,
 } from "@pages";
 import { Layout } from "@layouts";
-import { CreatePost, ProtectedRoute, PublicRoute} from "@components";
-
+import { CreatePost, ProtectedRoute, PublicRoute } from "@components";
 
 const AppRoutes = () => {
   return (
     <Routes>
-        <Route element={<PublicRoute />}>
+      <Route element={<PublicRoute />}>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-otp" element={<VerifyOTPPage />} />
       </Route>
-    <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/home" element={<HomePage />} />
-          <Route path="/reels" element={<ReelsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/:username" element={<ProfilePage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/create" element={<CreatePost />} />
+          <Route
+            path="/profile/:username/post/:postId"
+            element={<UserPostViewer />}
+          />
         </Route>
       </Route>
     </Routes>

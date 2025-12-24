@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "@layouts/AuthLayout";
-import Logo from "@public/logo.png";
 import { InputField, Button } from "@components";
 import { registerValidationSchema, debounce } from "@utils";
-import { registerUser, checkUsernameAvailable } from "@api/authService";
+import { registerUser, checkUsernameAvailable } from "@api/auth";
+import logo from "../assets/logo.png";
+
 
 const Register = () => {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ const Register = () => {
     <AuthLayout>
       <div className="w-full bg-white border border-gray-300 rounded-lg p-8">
         <div className="flex justify-center mb-6">
-          <img src={Logo} alt="SocialMeet Logo" className="h-12" />
+          <img src={logo} alt="SocialMeet Logo" className="h-12" />
         </div>
 
         <form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">

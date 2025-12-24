@@ -1,34 +1,36 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import ProfileHeader from "@components/ProfileHeader";
-import PostThumbnail from "@components/PostThumbnail";
-import SavedThumbnail from "@components/SavedThumbnail";
+import ProfileHeader from "@components/profile/ProfileHeader";
+import PostThumbnail from "@components/post/PostThumbnail";
+import SavedThumbnail from "@components/savedpost/SavedThumbnail";
 import SidebarMore from "@components/sidebar/SidebarMore";
-import savedPosts from "@data/Saved";
 import { useAuth } from "@context/AuthContext";
 import { getMyProfile, getPublicProfile } from "@api/profile";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("posts");
-  const { username } = useParams();
+  const { username: paramUsername } = useParams();
   const navigate = useNavigate();
   const { me } = useAuth();
 
+  const normalizedParamUsername = paramUsername?.replace("@", "");
+  const myUsername = me?.user?.username?.replace("@", "");
+
   const isOwnProfile =
-    !username || username === me?.user?.username;
+    !normalizedParamUsername || normalizedParamUsername === myUsername;
 
   const {
     data: profile,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["profile", isOwnProfile ? "me" : username],
+    queryKey: ["profile", isOwnProfile ? "me" : normalizedParamUsername],
     queryFn: () =>
       isOwnProfile
         ? getMyProfile()
-        : getPublicProfile(username),
-    enabled: isOwnProfile || !!username,
+        : getPublicProfile(normalizedParamUsername),
+    enabled: isOwnProfile || !!normalizedParamUsername,
     keepPreviousData: true,
   });
 
@@ -62,7 +64,11 @@ const ProfilePage = () => {
       return profile.posts.map((post) => (
         <div
           key={post.id}
-          onClick={() => navigate(`/home?scrollTo=${post.id}`)}
+          onClick={() =>
+            navigate(
+              `/profile/${profile.user.username.replace("@", "")}/post/${post.id}`
+            )
+          }
           className="cursor-pointer"
         >
           <PostThumbnail post={post} />
@@ -71,7 +77,15 @@ const ProfilePage = () => {
     }
 
     if (activeTab === "saved") {
-      return savedPosts.map((item) => (
+      if (!profile.savedPosts?.length) {
+        return (
+          <p className="text-center text-gray-400 py-10 col-span-full">
+            No saved posts
+          </p>
+        );
+      }
+
+      return profile.savedPosts.map((item) => (
         <SavedThumbnail
           key={`${item.type}-${item.id}`}
           item={item}

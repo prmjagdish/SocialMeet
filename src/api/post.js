@@ -1,4 +1,5 @@
 import api from "./apiClient";
+import { POSTS_ENDPOINTS } from "@api/config";  
 
 export const uploadPostOrReel = (username, mediaFile, caption, type = "post") => {
   const formData = new FormData();
@@ -16,3 +17,16 @@ export const fetchFeedPosts = async (page = 0, size = 10) => {
   console.log("feedpost Data",data);
   return data;
 }
+
+export const deletePost = async (postId, username) => {
+  try {
+    const response = await api.delete(`${POSTS_ENDPOINTS.DELETE_POST}${postId}`, {
+      params: { username },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
+};

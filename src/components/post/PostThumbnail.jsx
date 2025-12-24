@@ -1,13 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-
 const PostThumbnail = ({ post }) => {
-
-
   return (
     <Link to={`/post/${post.id}`} className="relative group block">
-      {/* Image */}
       <div className="w-full aspect-square overflow-hidden">
         <img
           src={post?.imageUrl}

@@ -2,9 +2,9 @@ import React, { useContext, useState } from "react";
 import FollowerAndFollowing from "./FollowerAndFollowing";
 import ProfileEditForm from "./ProfileEditForm";
 import { FaShareAlt } from "react-icons/fa";
+import defualtAvatar from "../../assets/avatarimage.png";
 
-const ProfileHeader = ({profile}) => {
-
+const ProfileHeader = ({ profile }) => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   if (!profile) {
@@ -13,19 +13,16 @@ const ProfileHeader = ({profile}) => {
 
   return (
     <div className="flex flex-col gap-4 p-4 sm:p-6 bg-white rounded-xl  w-full">
-
       <div className="flex gap-6 items-start">
-
         <div className="flex-shrink-0">
           <img
-            src={profile.user.avatar || "/image.png"}
+            src={profile.user.avatar || defualtAvatar}
             alt={profile.user.name}
             onError={(e) => {
-              e.currentTarget.src = "/default-image.png";
+              e.currentTarget.src = defualtAvatar;
             }}
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border border-gray-300"
           />
-
         </div>
 
         <div className="flex flex-col gap-1">
@@ -48,26 +45,28 @@ const ProfileHeader = ({profile}) => {
           <span className="font-semibold">{profile.posts?.length || 0}</span>{" "}
           posts
         </span>
-        <FollowerAndFollowing
+        {/* <FollowerAndFollowing
           followers={profile.followers?.length || 0}
           following={profile.following?.length || 0}
-        />
+        /> */}
       </div>
 
-      {profile.owner && (<div className="flex gap-3">
-        <button
-          onClick={() => setShowEditModal(true)}
-          className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm sm:text-base"
-        >
-          Edit Profile
-        </button>
-        <button
-          onClick={() => alert("Share Profile clicked")}
-          className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition flex items-center gap-2 text-sm sm:text-base"
-        >
-          <FaShareAlt /> Share Profile
-        </button>
-      </div>)}
+      {profile.owner && (
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm sm:text-base"
+          >
+            Edit Profile
+          </button>
+          <button
+            onClick={() => alert("Share Profile clicked")}
+            className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition flex items-center gap-2 text-sm sm:text-base"
+          >
+            <FaShareAlt /> Share Profile
+          </button>
+        </div>
+      )}
 
       {showEditModal && (
         <ProfileEditForm

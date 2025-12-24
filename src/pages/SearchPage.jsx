@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSuggestedUsers } from "@context/SuggestedUsersProvider";
 import { useNavigate } from "react-router-dom";
+import defualtAvatar from "../assets/avatarimage.png";
 
 const SearchPage = () => {
   const { suggestedUsers = [] } = useSuggestedUsers();
@@ -17,7 +18,6 @@ const SearchPage = () => {
   return (
     <div className="min-h-screen p-4 pb-24 md:pb-4 flex justify-center">
       <div className="w-full max-w-md">
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search by name or username"
@@ -27,7 +27,6 @@ const SearchPage = () => {
                      focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* Results */}
         {filteredUsers.length > 0 ? (
           <>
             <div className="space-y-3">
@@ -38,14 +37,14 @@ const SearchPage = () => {
                              border border-gray-200 rounded-lg p-3 shadow-sm
                              hover:shadow-md transition"
                 >
-                   <div
+                  <div
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={() =>
                       navigate(`/profile/${u.username.replace("@", "")}`)
                     }
                   >
                     <img
-                      src={u.avatarUrl || "/image.png"}
+                      src={u.avatarUrl || defualtAvatar}
                       alt={u.username}
                       className="w-12 h-12 rounded-full object-cover"
                     />
@@ -67,7 +66,6 @@ const SearchPage = () => {
               ))}
             </div>
 
-            {/* Show more */}
             {visibleCount < filteredUsers.length && (
               <div className="mt-4 text-center">
                 <button

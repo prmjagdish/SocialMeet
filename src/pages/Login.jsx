@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Logo from "@public/logo.png";
 import { FaGoogle } from "react-icons/fa";
 import AuthLayout from "@layouts/AuthLayout";
 import { InputField, Button } from "@components";
-import { loginUser } from "@api/authService";
+import { loginUser } from "@api/auth";
 import { useFormik } from "formik";
 import { loginValidationSchema } from "@utils/validation";
 import { useAuth } from "@context/AuthContext";
+import logo from "../assets/logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -38,7 +38,6 @@ const Login = () => {
     },
   });
 
-  // ✅ Revalidate only AFTER blur and ONLY if error exists
   const revalidateIfError = async (field) => {
     if (formik.touched[field] && formik.errors[field]) {
       await formik.validateField(field);
@@ -49,11 +48,10 @@ const Login = () => {
     <AuthLayout>
       <div className="w-full bg-white border border-gray-300 rounded-lg p-8">
         <div className="flex justify-center mb-6">
-          <img src={Logo} alt="SocialMeet Logo" className="h-12" />
+          <img src={logo} alt="SocialMeet Logo" className="h-12" />
         </div>
 
         <form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">
-          {/* Username */}
           <InputField
             name="username"
             placeholder="Username"
@@ -66,7 +64,6 @@ const Login = () => {
             error={formik.touched.username && formik.errors.username}
           />
 
-          {/* Password */}
           <InputField
             name="password"
             type="password"
@@ -86,7 +83,6 @@ const Login = () => {
             </p>
           )}
 
-          {/* Button */}
           <Button
             type="submit"
             disabled={

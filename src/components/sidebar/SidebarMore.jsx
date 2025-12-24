@@ -5,6 +5,7 @@ import MenuItem from "./MenuItem";
 import useOutsideClick from "@hooks/useOutsideClick";
 import { useAuth } from "@context/AuthContext.jsx";
 import { deleteAccount } from "@api/profile";
+import ConfirmDeleteModal from "@components/ui/CofirmDeleteModal.jsx";
 
 const SidebarMore = ({ variant = "sidebar" }) => {
   const [open, setOpen] = useState(false);
@@ -18,21 +19,17 @@ const SidebarMore = ({ variant = "sidebar" }) => {
 
   const isTop = variant === "top";
 
-  const handleDeleteAccount = async () => {
-    if (isDeleting) return; // prevent double click
-
+ const handleDeleteAccount = async () => {
+  try {
     setIsDeleting(true);
-    try {
-      await deleteAccount();
-      logout();
-      navigate("/", { replace: true });
-    } catch (err) {
-      console.error("Delete account failed", err);
-    } finally {
-      setIsDeleting(false);
-      setShowDeletePopup(false);
-    }
-  };
+    await deleteAccount();
+    logout();
+  } catch {
+    alert("Account deletion failed");
+  } finally {
+    setIsDeleting(false);
+  }
+};
 
   return (
     <div ref={ref} className="relative">
@@ -78,47 +75,15 @@ const SidebarMore = ({ variant = "sidebar" }) => {
           />
         </div>
       )}
-      {showDeletePopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-[90%] max-w-sm bg-white rounded-2xl p-6 shadow-xl">
-            {/* Title */}
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              Delete account?
-            </h2>
-
-            {/* Message */}
-            <p className="text-sm text-gray-500 mb-6">
-              This action is permanent. Your profile, posts, and data will be
-              deleted and cannot be recovered.
-            </p>
-
-            {/* Buttons */}
-            <div className="flex justify-end gap-3">
-              <button
-                disabled={isDeleting}
-                onClick={() => setShowDeletePopup(false)}
-                className="px-4 py-2 text-sm rounded-lg border hover:bg-gray-100 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                disabled={isDeleting}
-                className={`px-4 py-2 text-sm rounded-lg text-white flex items-center gap-2
-                  ${isDeleting
-                    ? "bg-red-400 cursor-not-allowed"
-                    : "bg-red-600 hover:bg-red-700"
-                  }`}
-              >
-                {isDeleting && (
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                )}
-                {isDeleting ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
+      <ConfirmDeleteModal
+        open={showDeletePopup}
+        title="Delete account?"
+        message="This action is irreversible. All your data will be permanently deleted."
+        isLoading={isDeleting}
+        onCancel={() => setShowDeletePopup(false)}
+        onConfirm={handleDeleteAccount}
+      />
     </div>
   );
 };

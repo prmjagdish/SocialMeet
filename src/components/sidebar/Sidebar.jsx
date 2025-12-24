@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaHome, FaSearch, FaVideo, FaUser } from "react-icons/fa";
 import { FiPlusSquare } from "react-icons/fi";
 import SidebarMore from "./SidebarMore";
+import logo from "../../assets/logo.png";
 
 const Sidebar = () => {
   const [active, setActive] = useState("Home");
@@ -12,17 +13,18 @@ const Sidebar = () => {
     { label: "Home", icon: <FaHome />, path: "/home" },
     { label: "Search", icon: <FaSearch />, path: "/search" },
      { label: "Create", icon: <FiPlusSquare />, path: "/create" },
-    { label: "Reels", icon: <FaVideo />, path: "/reels" },
+    { label: "Reels", icon: <FaVideo />},
     { label: "Profile", icon: <FaUser />, path: "/profile" },
   ];
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-60 h-screen bg-white shadow-lg">
+      <aside className="hidden md:flex flex-col w-60 h-screen bg-white shadow-lg border-r border-gray-200
+">
         {/* Logo */}
         <div className="px-6 py-6 flex justify-center">
-          <img src=".././logo.png" alt="logo" className="h-12" />
+          <img src={logo} alt="logo" className="h-12" />
         </div>
 
         {/* Nav */}
@@ -37,7 +39,7 @@ const Sidebar = () => {
               className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium
                 ${active === item.label ? "bg-gray-100" : "hover:bg-gray-100"}`}
             >
-              <span className="text-lg">{item.icon}</span>
+              <span className="text-2xl">{item.icon}</span>
               {item.label}
             </button>
           ))}
