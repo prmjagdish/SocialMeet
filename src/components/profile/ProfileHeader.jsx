@@ -1,18 +1,48 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import FollowerAndFollowing from "./FollowerAndFollowing";
 import ProfileEditForm from "./ProfileEditForm";
 import { FaShareAlt } from "react-icons/fa";
 import defualtAvatar from "../../assets/avatarimage.png";
+import { useParams } from "react-router-dom";
+import { followUser, unfollowUser } from "@api/user";
 
 const ProfileHeader = ({ profile }) => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { username } = useParams();
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    if (profile?.followingByMe !== undefined) {
+      setIsFollowing(profile.followingByMe);
+    }
+  }, [profile]);
+
+  const handleFollowToggle = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      if (isFollowing) {
+        await unfollowUser(username);
+        setIsFollowing(false);
+      } else {
+        await followUser(username);
+        setIsFollowing(true);
+      }
+    } catch (err) {
+      console.error("Follow action failed", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!profile) {
     return <div className="text-center p-4 text-gray-500">Loading...</div>;
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 bg-white rounded-xl  w-full">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 bg`-white rounded-xl  w-full">
       <div className="flex gap-6 items-start">
         <div className="flex-shrink-0">
           <img
@@ -45,28 +75,52 @@ const ProfileHeader = ({ profile }) => {
           <span className="font-semibold">{profile.posts?.length || 0}</span>{" "}
           posts
         </span>
-        {/* <FollowerAndFollowing
-          followers={profile.followers?.length || 0}
-          following={profile.following?.length || 0}
-        /> */}
+        <FollowerAndFollowing
+          followers={profile.followers || []}
+          following={profile.following || []}
+        />
       </div>
 
-      {profile.owner && (
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowEditModal(true)}
-            className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm sm:text-base"
-          >
-            Edit Profile
-          </button>
-          <button
-            onClick={() => alert("Share Profile clicked")}
-            className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition flex items-center gap-2 text-sm sm:text-base"
-          >
-            <FaShareAlt /> Share Profile
-          </button>
-        </div>
-      )}
+      <div className="flex gap-3">
+        {profile.owner ? (
+          <>
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm sm:text-base"
+            >
+              Edit Profile
+            </button>
+            <button
+              onClick={() => alert("Share Profile clicked")}
+              className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition flex items-center gap-2 text-sm sm:text-base"
+            >
+              <FaShareAlt /> Share Profile
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={handleFollowToggle}
+              disabled={loading}
+              className={`px-4 py-1 rounded-lg border transition
+        ${
+          isFollowing
+            ? " border-gray-300 hover:bg-gray-100 text-gray-800"
+            : "bg-blue-500 text-white hover:bg-blue-600"
+        }
+      `}
+            >
+              {loading ? "Please wait..." : isFollowing ? "Unfollow" : "Follow"}
+            </button>
+            <button
+              onClick={() => alert("Share Profile clicked")}
+              className="px-4 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition flex items-center gap-2 text-sm sm:text-base"
+            >
+              <FaShareAlt /> Share Profile
+            </button>
+          </>
+        )}
+      </div>
 
       {showEditModal && (
         <ProfileEditForm

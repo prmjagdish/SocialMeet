@@ -14,3 +14,8 @@ export const AUTH_ENDPOINTS = {
 export const POSTS_ENDPOINTS = {
   DELETE_POST: "/api/posts/",
 };
+
+export const USERS_ENDPOINTS = {
+  FOLLOW_USER:"/api/users/",
+  UNFOLLOW_USER:"/api/users/unfollow/",
+};

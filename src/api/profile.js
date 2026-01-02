@@ -3,7 +3,7 @@ import { AUTH_ENDPOINTS } from "@api/config";
 
 export const getMyProfile = async () => {
   const response = await api.get("/api/profile/me");
-  console.log("profile data",response.data);
+  console.log(response.data)
   return response.data;
 };
 

@@ -14,7 +14,7 @@ export const uploadPostOrReel = (username, mediaFile, caption, type = "post") =>
 
 export const fetchFeedPosts = async (page = 0, size = 10) => {
   const { data } = await api.get(`/api/posts/feed?page=${page}&size=${size}`);
-  console.log("feedpost Data",data);
+  console.log(data);
   return data;
 }
 
@@ -26,7 +26,6 @@ export const deletePost = async (postId, username) => {
 
     return response.data;
   } catch (error) {
-    console.error("Error deleting post:", error);
     throw error;
   }
 };

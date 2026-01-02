@@ -2,22 +2,50 @@ import React, { useState } from "react";
 import { useSuggestedUsers } from "@context/SuggestedUsersProvider";
 import { useNavigate } from "react-router-dom";
 import defualtAvatar from "../assets/avatarimage.png";
+import { followUser, unfollowUser } from "@api/user";
 
 const SearchPage = () => {
   const { suggestedUsers = [] } = useSuggestedUsers();
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleCount, setVisibleCount] = useState(5);
+  const [users, setUsers] = useState(suggestedUsers); // local state for toggling
   const navigate = useNavigate();
 
-  const filteredUsers = suggestedUsers.filter(
+  // Remove @ from username
+  const cleanUsername = (username) => username.replace(/^@/, "");
+
+  // Filter users based on search term
+  const filteredUsers = users.filter(
     (u) =>
       (u.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (u.username || "").toLowerCase().includes(searchTerm.toLowerCase())
+      (cleanUsername(u.username) || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Handle follow/unfollow
+  const handleFollowToggle = async (user) => {
+    try {
+      const username = cleanUsername(user.username);
+      if (user.following) {
+        await unfollowUser(username);
+      } else {
+        await followUser(username);
+      }
+      // Update local state
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === user.id ? { ...u, following: !u.following } : u
+        )
+      );
+    } catch (err) {
+      console.error("Error toggling follow:", err);
+      alert("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen p-4 pb-24 md:pb-4 flex justify-center">
       <div className="w-full max-w-md">
+        {/* Search Input */}
         <input
           type="text"
           placeholder="Search by name or username"
@@ -27,6 +55,7 @@ const SearchPage = () => {
                      focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
+        {/* Users List */}
         {filteredUsers.length > 0 ? (
           <>
             <div className="space-y-3">
@@ -39,33 +68,39 @@ const SearchPage = () => {
                 >
                   <div
                     className="flex items-center gap-3 cursor-pointer"
-                    onClick={() =>
-                      navigate(`/profile/${u.username.replace("@", "")}`)
-                    }
+                    onClick={() => navigate(`/profile/${cleanUsername(u.username)}`)}
                   >
                     <img
                       src={u.avatarUrl || defualtAvatar}
                       alt={u.username}
                       className="w-12 h-12 rounded-full object-cover"
+                      onError={(e) => (e.currentTarget.src = defualtAvatar)}
                     />
                     <div>
                       <p className="font-semibold text-sm">
-                        {u.name || u.username.replace("@", "")}
+                        {u.name || cleanUsername(u.username)}
                       </p>
-                      <p className="text-gray-500 text-sm">{u.username}</p>
+                      <p className="text-gray-500 text-sm">{cleanUsername(u.username)}</p>
                     </div>
                   </div>
 
+                  {/* Follow / Unfollow Button */}
                   <button
-                    className="px-4 py-1.5 text-sm font-semibold rounded-md
-                               border border-gray-300 hover:bg-gray-200"
+                    className={`px-4 py-1.5 text-sm font-semibold rounded-md border 
+                                ${u.following ? "border-gray-300 text-gray-500 bg-gray-100" 
+                                                : "border-gray-300 text-blue-500 hover:bg-gray-200"}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleFollowToggle(u);
+                    }}
                   >
-                    Follow
+                    {u.following ? "Following" : "Follow"}
                   </button>
                 </div>
               ))}
             </div>
 
+            {/* Show More Button */}
             {visibleCount < filteredUsers.length && (
               <div className="mt-4 text-center">
                 <button
