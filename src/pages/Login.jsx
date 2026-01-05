@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FaGoogle } from "react-icons/fa";
 import AuthLayout from "@layouts/AuthLayout";
 import { InputField, Button } from "@components";
 import { loginUser } from "@api/auth";
@@ -8,6 +7,7 @@ import { useFormik } from "formik";
 import { loginValidationSchema } from "@utils/validation";
 import { useAuth } from "@context/AuthContext";
 import logo from "../assets/logo.png";
+import GoogleLoginButton from "@components/auth/GoogleLoginButton";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -100,11 +100,9 @@ const Login = () => {
           <span className="px-3 text-gray-500 text-xs font-semibold">OR</span>
           <div className="flex-grow border-t border-gray-300" />
         </div>
+        
+        <GoogleLoginButton />
 
-        <button className="w-full flex items-center justify-center gap-3 py-2 border border-gray-300 rounded-md text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
-          <FaGoogle className="text-red-600 text-lg" />
-          Log in with Google
-        </button>
       </div>
 
       <div className="w-full bg-white border border-gray-300 p-4 rounded-lg text-center mt-3">
